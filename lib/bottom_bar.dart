@@ -15,6 +15,7 @@ class BottomBar extends StatelessWidget {
     this.itemPadding = const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
     required this.items,
     required this.onTap,
+    this.mainAxisAlignment = MainAxisAlignment.spaceEvenly,
     this.textStyle = const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
   }) : super(key: key);
 
@@ -36,6 +37,9 @@ class BottomBar extends StatelessWidget {
   /// Padding between the background color and
   /// (`Row` that contains icon and title)
   final EdgeInsets itemPadding;
+  
+  /// The main axis alignment of the `BottomBarItem`s row
+  final MainAxisAlignment mainAxisAlignment;
 
   /// List of `BottomBarItems` to display
   final List<BottomBarItem> items;
