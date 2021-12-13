@@ -62,7 +62,7 @@ class BottomBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: mainAxisAlignment,
           children: List.generate(
             items.length,
             (int index) {
