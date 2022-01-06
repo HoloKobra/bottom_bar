@@ -13,6 +13,7 @@ class BottomBar extends StatelessWidget {
     this.height,
     this.backgroundColor,
     this.itemPadding = const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+    this.itemHeight = 48,
     required this.items,
     required this.onTap,
     this.mainAxisAlignment = MainAxisAlignment.spaceEvenly,
@@ -37,8 +38,11 @@ class BottomBar extends StatelessWidget {
   /// Padding between the background color and
   /// (`Row` that contains icon and title)
   final EdgeInsets itemPadding;
-  
-  /// The main axis alignment of the `BottomBarItem`s row
+
+  /// The height of the individual item
+  final double itemHeight;
+
+  /// The alignment of the `BottomBarItem`s in the main axis
   final MainAxisAlignment mainAxisAlignment;
 
   /// List of `BottomBarItems` to display
@@ -59,45 +63,45 @@ class BottomBar extends StatelessWidget {
     return Container(
       height: height?.toDouble(),
       decoration: BoxDecoration(color: backgroundColor),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          mainAxisAlignment: mainAxisAlignment,
-          children: List.generate(
-            items.length,
-            (int index) {
-              final _selectedColor = _brightness == Brightness.light
-                  ? items[index].activeColor
-                  : items[index].darkActiveColor ?? items[index].activeColor;
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: Row(
+        mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: CrossAxisAlignment.center
+        children: List.generate(
+          items.length,
+          (int index) {
+            final _selectedColor = _brightness == Brightness.light
+                ? items[index].activeColor
+                : items[index].darkActiveColor ?? items[index].activeColor;
 
-              final _selectedColorWithOpacity = _selectedColor.withOpacity(0.1);
+            final _selectedColorWithOpacity = _selectedColor.withOpacity(0.1);
 
-              final _inactiveColor = items[index].inactiveColor ??
+            final _inactiveColor = items[index].inactiveColor ??
                   (_brightness == Brightness.light
                       ? const Color(0xFF404040)
                       : const Color(0xF2FFFFFF));
 
-              final _rightPadding = itemPadding.right;
+            final _rightPadding = itemPadding.right;
 
-              return _BottomBarItemWidget(
-                index: index,
-                key: items.elementAt(index).key,
-                isSelected: index == selectedIndex,
-                selectedColor: _selectedColor,
-                selectedColorWithOpacity: _selectedColorWithOpacity,
-                inactiveColor: _inactiveColor,
-                rightPadding: _rightPadding,
-                curve: curve,
-                duration: duration,
-                itemPadding: itemPadding,
-                textStyle: textStyle,
-                icon: items.elementAt(index).icon,
-                inactiveIcon: items.elementAt(index).inactiveIcon,
-                title: items.elementAt(index).title,
-                onTap: () => onTap(index),
-              );
-            },
-          ),
+            return _BottomBarItemWidget(
+              index: index,
+              key: items.elementAt(index).key,
+              isSelected: index == selectedIndex,
+              selectedColor: _selectedColor,
+              selectedColorWithOpacity: _selectedColorWithOpacity,
+              inactiveColor: _inactiveColor,
+              rightPadding: _rightPadding,
+              curve: curve,
+              duration: duration,
+              itemPadding: itemPadding,
+              height: itemHeight,
+              textStyle: textStyle,
+              icon: items.elementAt(index).icon,
+              inactiveIcon: items.elementAt(index).inactiveIcon,
+              title: items.elementAt(index).title,
+              onTap: () => onTap(index),
+            );
+          },
         ),
       ),
     );
@@ -117,6 +121,7 @@ class _BottomBarItemWidget extends StatelessWidget {
     required this.curve,
     required this.duration,
     required this.itemPadding,
+    required this.height,
     required this.textStyle,
     required this.icon,
     this.inactiveIcon,
@@ -152,6 +157,9 @@ class _BottomBarItemWidget extends StatelessWidget {
   /// (`Row` that contains icon and title)
   final EdgeInsets itemPadding;
 
+  /// The height of 'BottomBarItem'
+  final double height;
+
   /// `TextStyle` of `BottomBarItem` Title
   final TextStyle textStyle;
 
@@ -179,56 +187,58 @@ class _BottomBarItemWidget extends StatelessWidget {
       curve: curve,
       duration: duration,
       builder: (BuildContext context, double value, Widget? child) {
-        return Material(
-          color: Color.lerp(
-            selectedColor.withOpacity(0),
-            selectedColorWithOpacity,
-            value,
-          ),
-          shape: const StadiumBorder(),
-          child: InkWell(
-            onTap: onTap,
-            customBorder: const StadiumBorder(),
-            focusColor: selectedColorWithOpacity,
-            highlightColor: selectedColorWithOpacity,
-            splashColor: selectedColorWithOpacity,
-            hoverColor: selectedColorWithOpacity,
-            child: Padding(
-              padding:
-                  itemPadding - EdgeInsets.only(right: rightPadding * value),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  IconTheme(
-                    data: IconThemeData(
-                      color: Color.lerp(inactiveColor, selectedColor, value),
-                      size: 24,
+        return Container(
+          height: height,
+          child: Material(
+            color: Color.lerp(
+              selectedColor.withOpacity(0),
+              selectedColorWithOpacity,
+              value,
+            ),
+            shape: const StadiumBorder(),
+            child: InkWell(
+              onTap: onTap,
+              customBorder: const StadiumBorder(),
+              focusColor: selectedColorWithOpacity,
+              highlightColor: selectedColorWithOpacity,
+              splashColor: selectedColorWithOpacity,
+              hoverColor: selectedColorWithOpacity,
+              child: Padding(
+                padding:
+                    itemPadding - EdgeInsets.only(right: rightPadding * value),
+                child: Row(
+                  children: [
+                    IconTheme(
+                      data: IconThemeData(
+                        color: Color.lerp(inactiveColor, selectedColor, value),
+                        size: 24,
+                      ),
+                      child: isSelected ? icon : (inactiveIcon ?? icon),
                     ),
-                    child: isSelected ? icon : (inactiveIcon ?? icon),
-                  ),
-                  ClipRect(
-                    child: SizedBox(
-                      height: 20,
-                      child: Align(
-                        alignment: const Alignment(-0.2, 0),
-                        widthFactor: value,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: rightPadding / 2,
-                            right: rightPadding,
-                          ),
-                          child: DefaultTextStyle(
-                            style: textStyle.copyWith(
-                              color: Color.lerp(
-                                  Colors.transparent, selectedColor, value),
+                    ClipRect(
+                      child: SizedBox(
+                        height: 20,
+                        child: Align(
+                          alignment: const Alignment(-0.2, 0),
+                          widthFactor: value,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              left: rightPadding / 2,
+                              right: rightPadding,
                             ),
-                            child: title,
+                            child: DefaultTextStyle(
+                              style: textStyle.copyWith(
+                                color: Color.lerp(
+                                    Colors.transparent, selectedColor, value),
+                              ),
+                              child: title,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
