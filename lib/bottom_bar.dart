@@ -197,6 +197,7 @@ class _BottomBarItemWidget extends StatelessWidget {
               padding:
                   itemPadding - EdgeInsets.only(right: rightPadding * value),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconTheme(
                     data: IconThemeData(
